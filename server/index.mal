@@ -57,6 +57,13 @@
                                          (fn* [line] (not (or (= line "") (= line nil))))))))))
                  events)))))
 
+(def! filter-for-csvs
+  (fn* [files]
+       (vals (! array_filter
+                files
+                (fn* [f]
+                     (= (! substr f -4 4) ".csv"))))))
+
 (def! process-http-request
   (fn* [vars]
   (let* [files (! scandir DATA-DIR)
