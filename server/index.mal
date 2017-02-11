@@ -34,6 +34,29 @@
            (append-event-to-file event-type event-comment)
            (throw-error 404 "No event supplied.")))))
 
+(def! concatenate-all-csvs
+  (fn* [events]
+       ; add the CSV header with the extra "event" field for the filename
+       (str "event," CSV-HEADER
+            ; join together each parsed csv file
+            (! implode "\n"
+               (map
+                 ; for every csv/event filename
+                 (fn* [event]
+                      ; grab the content of the csv
+                      (let* [csv-content (! file_get_contents (str DATA-DIR event ".csv"))]
+                        ; join the lines of the csv back together again
+                        (! implode "\n"
+                           ; loop through every line and add the event name
+                           (map (fn* [line] (str event "," line))
+                                ; filter out empty lines
+                                (vals (! array_filter
+                                         ; chop off the headline of the CSV as we already added one
+                                         (rest (! explode "\n" csv-content))
+                                         ; (function to filter out empty lines)
+                                         (fn* [line] (not (or (= line "") (= line nil))))))))))
+                 events)))))
+
 (def! process-http-request
   (fn* [vars]
   (let* [files (! scandir DATA-DIR)
