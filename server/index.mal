@@ -16,28 +16,43 @@
            (println (! json_encode {"error" e}))
            (php* "exit(1);"))))
 
+(def! get-valid
+  (fn* [m k]
+       (let* [v (get m k)]
+         (if v (if (not (= v "")) v)))))
+
+(def! ensure-csv-exists
+  (fn* [filename]
+       (if (not (! is_file filename))
+         (! file_put_contents filename CSV-HEADER WRITE-FLAGS))))
+
 (def! append-event-to-file
-  (fn* [event-type timestamp event-comment]
-       (let* [event-type-sanitised (! str_replace ["." "/" "\\" ":"] "" event-type)
-              filename (str DATA-DIR event-type-sanitised ".csv")
-              contents (str timestamp "," (if event-comment (! json_encode event-comment) "") "\n")]
+  (fn* [filename event-type timestamp event-comment]
+       (let* [contents (str timestamp "," (if event-comment (! json_encode event-comment) "") "\n")]
          (do
            ; ensure the file has a CSV header
-           (if (not (! is_file filename))
-             (! file_put_contents filename CSV-HEADER WRITE-FLAGS))
+           (ensure-csv-exists filename)
            ; stamp this event into the file
            (! file_put_contents filename contents WRITE-FLAGS)
            ; tell the user what we did
-           (! json_encode {:success true :event-type event-type-sanitised :timestamp timestamp :comment event-comment})))))
+           (! json_encode {:success true :event-type event-type :timestamp timestamp :comment event-comment})))))
+
+(def! create-event-csv
+  (fn* [event-type filename]
+       (! json_encode {:success true :event-type event-type :created (ensure-csv-exists filename)})))
 
 (def! log-new-event
   (fn* [data]
-       (let* [event-type (get data "event")
-              event-comment (get data "comment")
-              timestamp (get data "timestamp")]
-         (cond (or (not event-type) (= (str event-type) "")) (throw-error 404 "No event supplied.")
-               (or (not timestamp) (= (str timestamp) "")) (throw-error 404 "No timestamp supplied.")
-               true (append-event-to-file event-type timestamp event-comment)))))
+       (let* [event-type (get-valid data "event")
+              event-type-sanitised (if event-type (! str_replace ["." "/" "\\" ":"] "" event-type))
+              filename (if event-type-sanitised (str DATA-DIR event-type-sanitised ".csv"))
+              event-comment (get-valid data "comment")
+              timestamp (get-valid data "timestamp")
+              create (get-valid data "create")]
+         (cond (nil? event-type-sanitised) (throw-error 404 "No event supplied.")
+               create (create-event-csv event-type-sanitised filename)
+               (nil? timestamp) (throw-error 404 "No timestamp supplied.")
+               true (append-event-to-file filename event-type-sanitised timestamp event-comment)))))
 
 (def! concatenate-all-csvs
   (fn* [events]
