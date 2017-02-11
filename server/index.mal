@@ -1,22 +1,26 @@
 ; it's PHP jim, but not as we know it.
-(def! CSV-HEADER "time,comment\n")
+(def! CSV-HEADER "timestamp,comment\n")
 (def! WRITE-FLAGS 10) ;FILE_APPEND | LOCK_EX
 (def! DATA-DIR "../data/")
 
-(! header "Content-type: application/json")
+(def! response
+  (fn* [content-type content]
+       (do
+         (! header (str "Content-type: " content-type))
+         (println content))))
 
 (def! throw-error
   (fn* [c e]
-       (do (! http_response_code c)
+       (do (! header "Content-type: application/json") 
+           (! http_response_code c)
            (println (! json_encode {"error" e}))
            (php* "exit(1);"))))
 
 (def! append-event-to-file
-  (fn* [event-type event-comment]
+  (fn* [event-type timestamp event-comment]
        (let* [event-type-sanitised (! str_replace ["." "/" "\\" ":"] "" event-type)
               filename (str DATA-DIR event-type-sanitised ".csv")
-              timestamp (! time)
-              contents (str (! date "c" timestamp) "," (! json_encode event-comment) "\n")]
+              contents (str timestamp "," (if event-comment (! json_encode event-comment) "") "\n")]
          (do
            ; ensure the file has a CSV header
            (if (not (! is_file filename))
@@ -24,15 +28,16 @@
            ; stamp this event into the file
            (! file_put_contents filename contents WRITE-FLAGS)
            ; tell the user what we did
-           (println (! json_encode {:success true :event-type event-type-sanitised :filename filename :comment event-comment :timestamp timestamp}))))))
+           (! json_encode {:success true :event-type event-type-sanitised :timestamp timestamp :comment event-comment})))))
 
 (def! log-new-event
   (fn* [data]
        (let* [event-type (get data "event")
-              event-comment (get data "comment")]
-         (if event-type
-           (append-event-to-file event-type event-comment)
-           (throw-error 404 "No event supplied.")))))
+              event-comment (get data "comment")
+              timestamp (get data "timestamp")]
+         (cond (or (not event-type) (= (str event-type) "")) (throw-error 404 "No event supplied.")
+               (or (not timestamp) (= (str timestamp) "")) (throw-error 404 "No timestamp supplied.")
+               true (append-event-to-file event-type timestamp event-comment)))))
 
 (def! concatenate-all-csvs
   (fn* [events]
@@ -66,19 +71,19 @@
 
 (def! process-http-request
   (fn* [vars]
-  (let* [files (! scandir DATA-DIR)
-         csvs (vals (! array_filter
-                       files
-                       (fn* [f] (= (! substr f -4 4) ".csv"))))
-         event-names (map (fn* [f] (! substr f 0 -4)) csvs)]
-    (cond 
-      ; a get request always returns a list of available CSVs
-      (= (get vars "REQUEST_METHOD") "GET")
-      (println (! json_encode event-names))
+       (let* [files (! scandir DATA-DIR)
+              csvs (filter-for-csvs files)
+              event-names (map (fn* [f] (! substr f 0 -4)) csvs)]
+         (cond
+           ; a get request always returns a list of available CSVs
+           (= (get vars "REQUEST_METHOD") "GET")
+           (if (not (nil? (get ($ "_GET") "all")))
+             (response "text/csv" (concatenate-all-csvs event-names))
+             (response "application/json" (! json_encode event-names)))
 
-      ; a PUT request writes a new line to the end of a CSV
-      (= (get vars "REQUEST_METHOD") "POST")
-      (log-new-event ($ "_POST"))))))
+           ; a PUT request writes a new line to the end of a CSV
+           (= (get vars "REQUEST_METHOD") "POST")
+           (response "application/json" (log-new-event ($ "_POST")))))))
 
 ; *** main entry point *** ;
 
