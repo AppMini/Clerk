@@ -22,6 +22,12 @@
 (defn form-url-encoded [xhr]
   (xhr.setRequestHeader "Content-type" "application/x-www-form-urlencoded"))
 
+(defn handle-error [data error]
+  (console.log "Request error" error)
+  (set! (aget data :spinner) false)
+  (set! (aget data :error) (get error :error))
+  (console.log data))
+
 (defn log-event [data event-type]
   (let [timestamp (get (.split (.replace (.toISOString (Date.)) "T" " ") ".") 0)
         event-comment (get (get data :app) :comment)
@@ -33,16 +39,27 @@
                             :serialize query-serializer
                             :config form-url-encoded
                             :withCredentials true})]
+    (set! (aget data :spinner) true)
+    (set! (aget data :error) nil)
     (request.then
       (fn [response-data]
         (console.log response-data)
-        (set! (aget (aget data :app) :comment) "")))))
+        (set! (aget data :spinner) false)
+        (set! (aget data :error) nil)
+        (set! (aget (aget data :app) :comment) "")))
+    (request.catch (partial handle-error data))))
 
 (defn update-comment [data ev]
   (set! (aget (aget data :app) :comment) (str ev.target.value))
   (set! (aget ev :redraw) false))
 
 ; ***** Components ***** ;
+
+(defn component-spinner [data]
+  (m :div {:id "notifications"}
+     (if (or (get data :error) (get data :spinner))
+       [(if (get data :error) (m :span {:id "error-messages"} (get data :error)))
+        (if (get data :spinner) (m :div {:id "spinner"} "."))])))
 
 (defn component-comment [data]
   (m :textarea {:id "comment"
@@ -67,7 +84,8 @@
 
 (defn component-app [data]
   ;(console.log "component-app" data)
-  (m :div [(m {:view (partial component-comment data)})
+  (m :div [(m {:view (partial component-spinner data)})
+           (m {:view (partial component-comment data)})
            (m {:view (partial component-events data)})
            component-add-new-type]))
 
@@ -83,5 +101,8 @@
     (fn [data]
       (set! (aget app-data :app) {:event-types data})
       (console.log "app-data" app-data)
-      (m.mount app-el {:view (partial component-app app-data)})))) ; (partial component-app data)
+      (m.mount app-el {:view (partial component-app app-data)})))
+  (request.catch
+    (fn [error]
+      (m.render app-el (m "div" {:id "loader-error"} "Error connecting to the server.")))))
 

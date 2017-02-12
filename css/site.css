@@ -29,16 +29,16 @@ textarea, input {
 }
 
 button {
-	width: 60px;
-	height: 60px;
-	background-color: #0C9;
-	color: #FFF;
-	border-radius: 50px;
-	border: none;
-	text-align: center;
-	box-shadow: 2px 2px 3px #333;
-	font-size: 2em;
-	font-weight: bold;
+  width: 60px;
+  height: 60px;
+  background-color: #0C9;
+  color: #FFF;
+  border-radius: 50px;
+  border: none;
+  text-align: center;
+  box-shadow: 2px 2px 3px #333;
+  font-size: 2em;
+  font-weight: bold;
 }
 
 .color-1 {
@@ -84,8 +84,51 @@ button {
   font-weight: bold;
 }
 
+#loader-error {
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5em;
+  color: #b55;
+}
+
 #app {
   margin-top: 3em;
+}
+
+#notifications {
+  position: fixed;
+  background-color: rgba(0, 204, 153, 0.75);
+  color: #FFF;
+  border-radius: 50px;
+  border: none;
+  text-align: center;
+  /*box-shadow: 2px 2px 3px #333;*/
+  font-size: 2em;
+  font-weight: bold;
+  top: 0.25em;
+  right: 1em;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+#spinner {
+  animation: spinspin 0.2s infinite linear;
+  width: 2em;
+  display: inline-block;
+}
+
+@keyframes spinspin {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}
+
+#error-messages {
+  font-size: 0.75em;
+  color: #b55;
 }
 
 #add-event {
