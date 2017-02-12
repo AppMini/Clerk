@@ -82,12 +82,21 @@
               (m :input {:id "add-event-name"
                          :placeholder "New event name..."})]))
 
+(defn component-burger-menu [data]
+  (m :div {:id "burger-menu"}
+     [(m :div {:id "menu-button"
+               :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))}
+         "☰")
+      (if (get data :menu-show)
+        component-add-new-type)]))
+
 (defn component-app [data]
   ;(console.log "component-app" data)
-  (m :div [(m {:view (partial component-spinner data)})
-           (m {:view (partial component-comment data)})
-           (m {:view (partial component-events data)})
-           component-add-new-type]))
+  (m :div [(m {:view (partial component-burger-menu data)})
+           (m {:view (partial component-spinner data)})
+           (if (not (get data :menu-show))
+             [(m {:view (partial component-comment data)})
+              (m {:view (partial component-events data)})])]))
 
 ; ***** Main ***** ;
 

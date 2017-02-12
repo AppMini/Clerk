@@ -99,6 +99,8 @@ button {
   margin-top: 3em;
 }
 
+/*** top bar ***/
+
 #notifications {
   position: fixed;
   top: 0px;
@@ -130,18 +132,27 @@ button {
   color: #b55;
 }
 
+#menu-button {
+  position: absolute;
+  top: 0px;
+  right: 0.25em;
+  color: white;
+  font-size: 3em;
+  margin-top: -0.25em;
+}
+
 #add-event {
   float: right;
-  margin-top: 1em;
 }
 
 #add-event-name {
-  float: right;
-  width: 60%;
-  margin-top: 60px;
+  width: 70%;
+  margin-top: 0.5em;
   margin-right: 1em;
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
 }
+
+/*** main ***/
 
 .event {
   color: white;
