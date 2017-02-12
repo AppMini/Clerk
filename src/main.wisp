@@ -1,7 +1,7 @@
 ; ***** Util functions ***** ;
 
 (defn partial [f & args]
-  (let [args-stored (.slice args 0)]
+  (let [args-stored (.slice args)]
     ;(console.log "partial outer args-stored" args-stored)
     (fn [& args-new]
       ;(console.log "partial args-new" args-new)
@@ -22,6 +22,11 @@
 (defn form-url-encoded [xhr]
   (xhr.setRequestHeader "Content-type" "application/x-www-form-urlencoded"))
 
+(defn case-insensitive-sort [l]
+  (let [copy (.slice l)]
+    (.sort copy (fn [a b] (.localeCompare (a.toLowerCase) (b.toLowerCase))))
+    copy))
+
 (defn handle-error [data error]
   (console.log "Request error" error)
   (set! (aget data :spinner) false)
@@ -30,7 +35,7 @@
 
 (defn log-event [data event-type]
   (let [timestamp (get (.split (.replace (.toISOString (Date.)) "T" " ") ".") 0)
-        event-comment (get (get data :app) :comment)
+        event-comment (get data :comment)
         send-data {:timestamp timestamp
                    :event event-type}
         request (m.request {:method "POST"
@@ -46,11 +51,40 @@
         (console.log response-data)
         (set! (aget data :spinner) false)
         (set! (aget data :error) nil)
-        (set! (aget (aget data :app) :comment) "")))
+        (set! (aget data :comment) "")))
     (request.catch (partial handle-error data))))
 
 (defn update-comment [data ev]
-  (set! (aget (aget data :app) :comment) (str ev.target.value))
+  (set! (aget data :comment) (str ev.target.value))
+  (set! (aget ev :redraw) false))
+
+(defn add-new-event [data ev]
+  (let [event-name (get data :event-name)
+        send-data {:event event-name
+                   :create true}
+        request (m.request {:method "POST"
+                            :url "server/index.php"
+                            :data send-data
+                            :serialize query-serializer
+                            :config form-url-encoded
+                            :withCredentials true})]
+    (set! (aget data :spinner) true)
+    (set! (aget data :error) nil)
+    (request.then
+      (fn [response-data]
+        (console.log response-data)
+        (set! (aget data :spinner) false)
+        (set! (aget data :error) nil)
+        (set! (aget data :event-name) "")
+        (let [events (aget data :event-types)]
+          (.push events event-name)
+          (set! (aget data :event-types) (case-insensitive-sort events)))
+        (set! (aget data :menu-show) false)
+        (console.log data)))
+    (request.catch (partial handle-error data))))
+
+(defn update-event-name [data ev]
+  (set! (aget data :event-name) (str ev.target.value))
   (set! (aget ev :redraw) false))
 
 ; ***** Components ***** ;
@@ -65,30 +99,31 @@
   (m :textarea {:id "comment"
                 :rows 1
                 :onchange (partial update-comment data)
-                :placeholder "Event comment..."} (get (get data :app) :comment)))
+                :placeholder "Event comment..."} (get data :comment)))
 
 (defn component-events [data]
   ;(console.log "component-events" data)
   (m :div {:id "events"}
-     (.map (get (get data :app) :event-types)
+     (.map (get data :event-types)
            (fn [event-type i]
              (m "div" {:class "event"}
                 [(m "span" (str event-type))
                  (m "button" {:class (str "color-" (+ (mod i 5) 1))
                               :onclick (partial log-event data event-type)} "✔")])))))
 
-(def component-add-new-type
-  (m :div {} [(m :button {:id "add-event"} "+")
+(defn component-add-new-type [data]
+  (m :div {} [(m :button {:id "add-event"
+                          :onclick (partial add-new-event data)} "+")
               (m :input {:id "add-event-name"
+                         :onchange (partial update-event-name data)
                          :placeholder "New event name..."})]))
 
 (defn component-burger-menu [data]
   (m :div {:id "burger-menu"}
      [(m :div {:id "menu-button"
-               :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))}
-         "☰")
+               :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))} "☰")
       (if (get data :menu-show)
-        component-add-new-type)]))
+        (m {:view (partial component-add-new-type data)}))]))
 
 (defn component-app [data]
   ;(console.log "component-app" data)
@@ -105,10 +140,10 @@
                           :url "server/index.php"
                           :data {}
                           :withCredentials true})
-      app-data {:app nil}]
+      app-data {}]
   (request.then
-    (fn [data]
-      (set! (aget app-data :app) {:event-types data})
+    (fn [request-data]
+      (set! (aget app-data :event-types) (case-insensitive-sort request-data))
       (console.log "app-data" app-data)
       (m.mount app-el {:view (partial component-app app-data)})))
   (request.catch
