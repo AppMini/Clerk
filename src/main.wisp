@@ -58,8 +58,8 @@
 (defn component-spinner [data]
   (m :div {:id "notifications"}
      (if (or (get data :error) (get data :spinner))
-       [(if (get data :error) (m :span {:id "error-messages"} (get data :error)))
-        (if (get data :spinner) (m :div {:id "spinner"} "."))])))
+       [(if (get data :spinner) (m :div {:id "spinner"} "."))
+        (if (get data :error) (m :span {:id "error-messages"} (get data :error)))])))
 
 (defn component-comment [data]
   (m :textarea {:id "comment"

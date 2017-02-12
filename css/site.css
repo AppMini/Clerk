@@ -101,24 +101,23 @@ button {
 
 #notifications {
   position: fixed;
+  top: 0px;
+  left: 3.5em;
   background-color: rgba(0, 204, 153, 0.75);
   color: #FFF;
   border-radius: 50px;
   border: none;
-  text-align: center;
   /*box-shadow: 2px 2px 3px #333;*/
   font-size: 2em;
   font-weight: bold;
-  top: 0.25em;
-  right: 1em;
-  padding-left: 1em;
-  padding-right: 1em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  margin-top: 0.125em;
+  margin-left: -0.5em;
 }
 
 #spinner {
   animation: spinspin 0.2s infinite linear;
-  width: 2em;
-  display: inline-block;
 }
 
 @keyframes spinspin {
