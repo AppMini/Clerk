@@ -1,0 +1,5 @@
+AuthUserFile /path/to/.htpasswd
+AuthGroupFile /dev/null
+AuthName Eventlogger 
+AuthType Basic
+require valid-user
