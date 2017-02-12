@@ -2,12 +2,8 @@
 
 (defn partial [f & args]
   (let [args-stored (.slice args)]
-    ;(console.log "partial outer args-stored" args-stored)
     (fn [& args-new]
-      ;(console.log "partial args-new" args-new)
-      ;(console.log "partial args-stored" args-stored)
       (let [args-all (.concat [] args-stored args-new)]
-        ;(console.log "partial" args-all)
         (apply f args-all)))))
 
 ; http://stackoverflow.com/a/18116302/2131094
@@ -28,10 +24,9 @@
     copy))
 
 (defn handle-error [data error]
-  (console.log "Request error" error)
+  (console.log "Request error:" error)
   (set! (aget data :spinner) false)
-  (set! (aget data :error) (get error :error))
-  (console.log data))
+  (set! (aget data :error) (get error :error)))
 
 (defn log-event [data event-type]
   (let [timestamp (get (.split (.replace (.toISOString (Date.)) "T" " ") ".") 0)
@@ -48,7 +43,7 @@
     (set! (aget data :error) nil)
     (request.then
       (fn [response-data]
-        (console.log response-data)
+        (console.log "Server response:" response-data)
         (set! (aget data :spinner) false)
         (set! (aget data :error) nil)
         (set! (aget data :comment) "")))
@@ -72,15 +67,14 @@
     (set! (aget data :error) nil)
     (request.then
       (fn [response-data]
-        (console.log response-data)
+        (console.log "Server response:" response-data)
         (set! (aget data :spinner) false)
         (set! (aget data :error) nil)
         (set! (aget data :event-name) "")
         (let [events (aget data :event-types)]
           (.push events event-name)
           (set! (aget data :event-types) (case-insensitive-sort events)))
-        (set! (aget data :menu-show) false)
-        (console.log data)))
+        (set! (aget data :menu-show) false)))
     (request.catch (partial handle-error data))))
 
 (defn update-event-name [data ev]
@@ -102,7 +96,6 @@
                 :placeholder "Event comment..."} (get data :comment)))
 
 (defn component-events [data]
-  ;(console.log "component-events" data)
   (m :div {:id "events"}
      (.map (get data :event-types)
            (fn [event-type i]
@@ -126,7 +119,6 @@
         (m {:view (partial component-add-new-type data)}))]))
 
 (defn component-app [data]
-  ;(console.log "component-app" data)
   (m :div [(m {:view (partial component-burger-menu data)})
            (m {:view (partial component-spinner data)})
            (if (not (get data :menu-show))
@@ -146,7 +138,7 @@
   (request.then
     (fn [request-data]
       (set! (aget app-data :event-types) (case-insensitive-sort request-data))
-      (console.log "app-data" app-data)
+      (console.log "Initial app data:" app-data)
       (m.mount app-el {:view (partial component-app app-data)})))
   (request.catch
     (fn [error]
