@@ -20,5 +20,7 @@ Fetch a particular CSV:
 
 Fetch all CSVs concatenated together:
 
+	bin/test-fetch-csvs.sh
+	
 	curl 'http://localhost:8000/server/index.php?all'
 
