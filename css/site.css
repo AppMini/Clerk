@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
   font-family: "Open Sans";
+  color: #bbb;
 }
 
 html {
@@ -95,6 +96,17 @@ button {
   color: #b55;
 }
 
+#message {
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.5em;
+  color: white;
+}
+
 #app {
   margin-top: 3em;
 }
@@ -169,6 +181,9 @@ button {
   padding-left: 0.5em;
 }
 
+.event span {
+  color: white;
+}
 .event button {
   margin-top: -0.75em;
   float: right;

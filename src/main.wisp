@@ -130,8 +130,10 @@
   (m :div [(m {:view (partial component-burger-menu data)})
            (m {:view (partial component-spinner data)})
            (if (not (get data :menu-show))
-             [(m {:view (partial component-comment data)})
-              (m {:view (partial component-events data)})])]))
+             ( if (> (.-length (get data :event-types)) 0)
+               [(m {:view (partial component-comment data)})
+                (m {:view (partial component-events data)})]
+               (m :div {:id "message"} "Add an event-type from the menu to get started.")))]))
 
 ; ***** Main ***** ;
 
