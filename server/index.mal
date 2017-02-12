@@ -16,6 +16,10 @@
            (println (! json_encode {"error" e}))
            (php* "exit(1);"))))
 
+(def! console-dump
+  (fn* [v]
+       (! error_log (! print_r v true))))
+
 (def! get-valid
   (fn* [m k]
        (let* [v (get m k)]
