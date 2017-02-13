@@ -1,8 +1,8 @@
 # Clerk #
 
-![Screenshot](./screenshot.png)
-
 Simple event-logger app.
+
+![Screenshot](./screenshot.png)
 
  * Web based.
  * Easy to deploy.
