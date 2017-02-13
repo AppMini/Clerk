@@ -164,6 +164,14 @@ button {
 #settings-cog {
 }
 
+#settings-back {
+  font-size: 3em;
+  font-weight: bold;
+  color: white;
+  margin-top: -0.25em;
+  margin-right: 0.125em;
+}
+
 #settings-cog path {
   fill: white;
 }

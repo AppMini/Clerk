@@ -137,7 +137,9 @@
   (m :div {:id "burger-menu"}
      [(m :div {:id "menu-button"
                :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))}
-         component-settings-cog)
+         (if (get data :menu-show)
+           (m :div {:id "settings-back"} "⬅")
+           component-settings-cog))
       (if (get data :menu-show)
         (m :div {:id "burger-menu-items"}
            [(m {:view (partial component-add-new-type data)})
