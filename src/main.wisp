@@ -28,8 +28,25 @@
   (set! (aget data :spinner) false)
   (set! (aget data :error) (get error :error)))
 
+(defn get-current-timestamp []
+  (let [tz-offset (* (.getTimezoneOffset (Date.)) 60000)
+        now-offset (Date. (- (Date.now) tz-offset))]
+    (get (.split (.replace (.toISOString now-offset) "T" " ") ".") 0)))
+
+(defn now []
+  (.getTime (Date.)))
+
+(defn launch-focus-checker [data last-fired]
+  (let [last-fired-current (or last-fired (now))]
+    (console.log (- (now) last-fired-current))
+    (if (> (- (now) last-fired-current) 1000)
+      (do
+        (set! (aget data :timestamp) (get-current-timestamp))
+        (m.redraw)))
+    (setTimeout (partial launch-focus-checker data (now)) 500)))
+
 (defn log-event [data event-type]
-  (let [timestamp (get (.split (.replace (.toISOString (Date.)) "T" " ") ".") 0)
+  (let [timestamp (get data :timestamp)
         event-comment (get data :comment)
         send-data {:timestamp timestamp
                    :event event-type}
@@ -51,6 +68,10 @@
 
 (defn update-comment [data ev]
   (set! (aget data :comment) (str ev.target.value))
+  (set! (aget ev :redraw) false))
+
+(defn update-timestamp [data ev]
+  (set! (aget data :timestamp) (str ev.target.value))
   (set! (aget ev :redraw) false))
 
 (defn add-new-event [data ev]
@@ -83,12 +104,12 @@
 
 ; ***** Components ***** ;
 
-(def component-settings-cog
+(defn svg-icon [i]
   (m :svg {:id "settings-cog"
            :viewBox "0 0 24 24"
            :width 48
            :height 48}
-    (m :use {:xlink:href "#icon-settings"})))
+     (m :use {:xlink:href (str "#icon-" i)})))
 
 (defn component-spinner [data]
   (m :div {:id "notifications"}
@@ -97,11 +118,18 @@
         (if (get data :error) (m :span {:id "error-messages"} (get data :error)))])))
 
 (defn component-comment [data]
-  (console.log (.-length (.split (or (get data :comment) "") "\n")))
   (m :textarea {:id "comment"
                 :rows 2
                 :onchange (partial update-comment data)
                 :placeholder "Event comment..."} (get data :comment)))
+
+(defn component-timestamp [data]
+  (set! (aget data :timestamp) (get-current-timestamp))
+  (m :div {:id "timestamp"}
+     [(m :button {:id "add-event"
+                  :onclick (fn [ev] (m.redraw))} (svg-icon "reload"))
+      (m :input {:value (get data :timestamp)
+                 :onchange (partial update-timestamp data)})]))
 
 (defn component-events [data]
   (m :div {:id "events"}
@@ -139,7 +167,7 @@
                :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))}
          (if (get data :menu-show)
            (m :div {:id "settings-back"} "⬅")
-           component-settings-cog))
+           (svg-icon "settings")))
       (if (get data :menu-show)
         (m :div {:id "burger-menu-items"}
            [(m {:view (partial component-add-new-type data)})
@@ -151,7 +179,8 @@
            (m {:view (partial component-spinner data)})
            (if (not (get data :menu-show))
              ( if (> (.-length (get data :event-types)) 0)
-               [(m {:view (partial component-comment data)})
+               [(m {:view (partial component-timestamp data)})
+                (m {:view (partial component-comment data)})
                 (m {:view (partial component-events data)})]
                (m :div {:id "message"} "To get started, add a new event-type in settings.")))]))
 
@@ -169,5 +198,6 @@
       (m.mount app-el {:view (partial component-app app-data)})))
   (request.catch
     (fn [error]
-      (m.render app-el (m "div" {:id "loader-error"} "Error connecting to the server.")))))
+      (m.render app-el (m "div" {:id "loader-error"} "Error connecting to the server."))))
+  (launch-focus-checker app-data))
 

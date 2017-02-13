@@ -51,6 +51,10 @@ button {
   font-weight: bold;
 }
 
+button svg {
+  padding-top: 0.25em;
+}
+
 .color-1 {
   background-color: #FED833;
   color: #333;
@@ -172,12 +176,12 @@ button {
   margin-right: 0.125em;
 }
 
-#settings-cog path {
+path {
   fill: white;
 }
 
 #burger-menu-items > div {
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
   margin-top: 0px;
 }
 
@@ -207,6 +211,20 @@ button {
 }
 
 /*** main ***/
+
+#timestamp {
+  margin-bottom: 2em;
+}
+
+#timestamp input {
+  width: 70%;
+  margin-top: 1em;
+  font-size: 1.25em;
+}
+
+#timestamp button {
+  float: right;
+}
 
 .event {
   color: white;
