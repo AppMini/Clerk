@@ -96,8 +96,10 @@
          (cond
            ; a get request always returns a list of available CSVs
            (= (get vars "REQUEST_METHOD") "GET")
-           (if (not (nil? (get ($ "_GET") "all")))
-             (response "text/csv" (concatenate-all-csvs event-names))
+           (if (not (nil? (get ($ "_GET") "events-csv")))
+             (do
+               (! header "Content-disposition: attachment; filename=events.csv")
+               (response "text/csv" (concatenate-all-csvs event-names)))
              (response "application/json" (! json_encode event-names)))
 
            ; a PUT request writes a new line to the end of a CSV
