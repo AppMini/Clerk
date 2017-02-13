@@ -160,7 +160,6 @@
 (let [app-el (document.getElementById "app")
       request (m.request {:method "GET"
                           :url "server/index.php"
-                          :data {}
                           :withCredentials true})
       app-data {}]
   (request.then
