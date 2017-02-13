@@ -106,9 +106,9 @@
   (m :div {:id "events"}
      (.map (get data :event-types)
            (fn [event-type i]
-             (m "div" {:class "event"}
-                [(m "span" (str event-type))
-                 (m "button" {:class (str "color-" (+ (mod i 5) 1))
+             (m :div {:class "event"}
+                [(m :span (str event-type))
+                 (m :button {:class (str "color-" (+ (mod i 5) 1))
                               :onclick (partial log-event data event-type)} "✔")])))))
 
 (defn component-add-new-type [data]
@@ -126,10 +126,18 @@
       (if (get data :menu-show)
         (m :div {:id "burger-menu-items"}
            [(m {:view (partial component-add-new-type data)})
-            (m :div {:id "download-csv"}
-               (m :a {:href "server/index.php?events-csv" :target "_new"}
-                  [(m :button {} "⬇")
-                   (m :span {:class "burger-menu-item"} "Download combined CSV")]))]))]))
+            (if (.-length (get data :event-types))
+              [(m :h3 "CSV downloads")
+               (m :div {:class "event"}
+                  (m :a {:href "server/index.php?events-csv" :target "_new"}
+                     [(m :button {} "⬇")
+                      (m :span {:class "burger-menu-item"} "All events combined")]))
+               (.map (get data :event-types)
+                     (fn [event-type i]
+                       (m :div {:class "event"}
+                          (m :a {:href (str "data/" event-type ".csv") :class "burger-menu-item" :target "_new"}
+                             [(m :button {:class (str "color-" (+ (mod i 5) 1))} "⬇")
+                              (m :span event-type)]))))])]))]))
 
 (defn component-app [data]
   (m :div [(m {:view (partial component-burger-menu data)})
@@ -138,7 +146,7 @@
              ( if (> (.-length (get data :event-types)) 0)
                [(m {:view (partial component-comment data)})
                 (m {:view (partial component-events data)})]
-               (m :div {:id "message"} "Add an event-type in settings to get started.")))]))
+               (m :div {:id "message"} "To get started, add a new event-type in settings.")))]))
 
 ; ***** Main ***** ;
 

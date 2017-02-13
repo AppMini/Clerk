@@ -98,9 +98,9 @@ button {
 
 #message {
   position: absolute;
-  left: 0px;
+  left: 10%;
   top: 50%;
-  width: 100%;
+  width: 80%;
   text-align: center;
   font-weight: bold;
   font-size: 1.5em;
@@ -144,6 +144,8 @@ button {
   color: #b55;
 }
 
+/*** settings page ***/
+
 #menu-button {
   position: absolute;
   top: 0.25em;
@@ -159,14 +161,20 @@ button {
 
 #burger-menu-items > div {
   margin-bottom: 1em;
-  margin-top: 1em;
+  margin-top: 0px;
 }
 
 #burger-menu-items button {
-  margin-right: 0.75em;
+  float: right;
 }
 
-#burger-menu-items .burger-menu-item {
+#burger-menu-items h3 {
+  margin-top: 2em;
+  margin-bottom: 0px;
+}
+
+#burger-menu-items .event a {
+  text-decoration: none;
 }
 
 #add-event {
@@ -174,9 +182,10 @@ button {
 
 #add-event-name {
   width: 70%;
+  margin-top: 0.75em;
 }
 
-#download-csv span {
+.event-csv span {
   font-size: 1.5em;
 }
 
@@ -197,9 +206,15 @@ button {
   padding-left: 0.5em;
 }
 
+.event span.event-csv {
+  float: right;
+  margin-right: 2em;
+}
+
 .event span {
   color: white;
 }
+
 .event button {
   margin-top: -0.75em;
   float: right;
