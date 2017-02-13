@@ -104,11 +104,11 @@
 
 ; ***** Components ***** ;
 
-(defn svg-icon [i]
-  (m :svg {:id "settings-cog"
-           :viewBox "0 0 24 24"
+(defn svg-icon [i c]
+  (m :svg {:viewBox "0 0 24 24"
            :width 48
-           :height 48}
+           :height 48
+           :class c}
      (m :use {:xlink:href (str "#icon-" i)})))
 
 (defn component-spinner [data]
@@ -138,7 +138,7 @@
              (m :div {:class "event"}
                 [(m :span (str event-type))
                  (m :button {:class (str "color-" (+ (mod i 5) 1))
-                              :onclick (partial log-event data event-type)} "✔")])))))
+                              :onclick (partial log-event data event-type)} (svg-icon "check"))])))))
 
 (defn component-add-new-type [data]
   (m :div {} [(m :button {:id "add-event"

@@ -55,6 +55,10 @@ button svg {
   padding-top: 0.25em;
 }
 
+path {
+  fill: white;
+}
+
 .color-1 {
   background-color: #FED833;
   color: #333;
@@ -165,19 +169,11 @@ button svg {
   right: 0.5em;
 }
 
-#settings-cog {
-}
-
 #settings-back {
   font-size: 3em;
   font-weight: bold;
   color: white;
   margin-top: -0.25em;
-  margin-right: 0.125em;
-}
-
-path {
-  fill: white;
 }
 
 #burger-menu-items > div {
@@ -254,7 +250,12 @@ path {
   margin-top: -0.75em;
   float: right;
   font-size: 1.25em;
+  color: #444349;
 }
 
 .event span {
+}
+
+.event path {
+  fill: #444349;
 }
