@@ -13,7 +13,7 @@ Simple event-logger app.
 
 ### Install ###
 
- * Download [a release](https://github.com/chr15m/clerk/releases) or `git clone` the `master` branch.
+ * Download [a release](https://github.com/chr15m/Clerk/releases) or `git clone` the `master` branch.
  * Copy the files to your PHP web hosting.
 
 To require authentication, first create a password file:
