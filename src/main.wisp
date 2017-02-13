@@ -83,6 +83,13 @@
 
 ; ***** Components ***** ;
 
+(def component-settings-cog
+  (m :svg {:id "settings-cog"
+           :viewBox "0 0 24 24"
+           :width 48
+           :height 48}
+    (m :use {:xlink:href "#icon-settings"})))
+
 (defn component-spinner [data]
   (m :div {:id "notifications"}
      (if (or (get data :error) (get data :spinner))
@@ -107,16 +114,22 @@
 (defn component-add-new-type [data]
   (m :div {} [(m :button {:id "add-event"
                           :onclick (partial add-new-event data)} "+")
-              (m :input {:id "add-event-name"
-                         :onchange (partial update-event-name data)
-                         :placeholder "New event name..."})]))
+              (m :span {:class "burger-menu-item"}
+                 (m :input {:id "add-event-name"
+                            :onchange (partial update-event-name data)
+                            :placeholder "New event name..."}))]))
 
 (defn component-burger-menu [data]
   (m :div {:id "burger-menu"}
      [(m :div {:id "menu-button"
-               :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))} "☰")
+               :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))} component-settings-cog)
       (if (get data :menu-show)
-        (m {:view (partial component-add-new-type data)}))]))
+        (m :div {:id "burger-menu-items"}
+           [(m {:view (partial component-add-new-type data)})
+            (m :div {:id "download-csv"}
+               (m :a {:href "server/index.php?events-csv" :target "_new"}
+                  [(m :button {} "⬇")
+                   (m :span {:class "burger-menu-item"} "Download combined CSV")]))]))]))
 
 (defn component-app [data]
   (m :div [(m {:view (partial component-burger-menu data)})
@@ -125,7 +138,7 @@
              ( if (> (.-length (get data :event-types)) 0)
                [(m {:view (partial component-comment data)})
                 (m {:view (partial component-events data)})]
-               (m :div {:id "message"} "Add an event-type from the menu to get started.")))]))
+               (m :div {:id "message"} "Add an event-type in settings to get started.")))]))
 
 ; ***** Main ***** ;
 
