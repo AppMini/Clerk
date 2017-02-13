@@ -38,7 +38,6 @@
 
 (defn launch-focus-checker [data last-fired]
   (let [last-fired-current (or last-fired (now))]
-    (console.log (- (now) last-fired-current))
     (if (> (- (now) last-fired-current) 1000)
       (do
         (set! (aget data :timestamp) (get-current-timestamp))
@@ -63,7 +62,8 @@
         (console.log "Server response:" response-data)
         (set! (aget data :spinner) false)
         (set! (aget data :error) nil)
-        (set! (aget data :comment) "")))
+        (set! (aget data :comment) "")
+        (set! (aget data :success-message) "Event logged.")))
     (request.catch (partial handle-error data))))
 
 (defn update-comment [data ev]
@@ -95,12 +95,20 @@
         (let [events (aget data :event-types)]
           (.push events event-name)
           (set! (aget data :event-types) (case-insensitive-sort events)))
-        (set! (aget data :menu-show) false)))
+        (set! (aget data :menu-show) false)
+        (set! (aget data :success-message) "Event type added.")))
     (request.catch (partial handle-error data))))
 
 (defn update-event-name [data ev]
   (set! (aget data :event-name) (str ev.target.value))
   (set! (aget ev :redraw) false))
+
+(defn reset-success-message [data]
+  (setTimeout
+    (fn []
+      (set! (aget data :success-message) nil)
+      (m.redraw))
+    2000))
 
 ; ***** Components ***** ;
 
@@ -174,6 +182,13 @@
             (if (.-length (get data :event-types))
               (component-csv-downloads data))]))]))
 
+(defn component-success-message [data]
+  (if (get data :success-message)
+    (do
+      (reset-success-message data)
+      (m :div {:id "success-modal"}
+         [(svg-icon "check") (get data :success-message)]))))
+
 (defn component-app [data]
   (m :div [(m {:view (partial component-burger-menu data)})
            (m {:view (partial component-spinner data)})
@@ -182,7 +197,8 @@
                [(m {:view (partial component-timestamp data)})
                 (m {:view (partial component-comment data)})
                 (m {:view (partial component-events data)})]
-               (m :div {:id "message"} "To get started, add a new event-type in settings.")))]))
+               (m :div {:id "message"} "To get started, add a new event-type in settings.")))
+           (m {:view (partial component-success-message data)})]))
 
 ; ***** Main ***** ;
 
