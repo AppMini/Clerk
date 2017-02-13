@@ -120,25 +120,29 @@
                             :onchange (partial update-event-name data)
                             :placeholder "New event name..."}))]))
 
+(defn component-csv-downloads [data]
+  [(m :h3 "CSV downloads")
+   (m :div {:class "event"}
+      (m :a {:href "server/index.php?events-csv" :target "_new"}
+         [(m :button {} "⬇")
+          (m :span {:class "burger-menu-item"} "All events combined")]))
+   (.map (get data :event-types)
+         (fn [event-type i]
+           (m :div {:class "event"}
+              (m :a {:href (str "data/" event-type ".csv") :class "burger-menu-item" :target "_new"}
+                 [(m :button {:class (str "color-" (+ (mod i 5) 1))} "⬇")
+                  (m :span event-type)]))))])
+
 (defn component-burger-menu [data]
   (m :div {:id "burger-menu"}
      [(m :div {:id "menu-button"
-               :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))} component-settings-cog)
+               :onclick (fn [ev] (set! (aget data :menu-show) (not (get data :menu-show))))}
+         component-settings-cog)
       (if (get data :menu-show)
         (m :div {:id "burger-menu-items"}
            [(m {:view (partial component-add-new-type data)})
             (if (.-length (get data :event-types))
-              [(m :h3 "CSV downloads")
-               (m :div {:class "event"}
-                  (m :a {:href "server/index.php?events-csv" :target "_new"}
-                     [(m :button {} "⬇")
-                      (m :span {:class "burger-menu-item"} "All events combined")]))
-               (.map (get data :event-types)
-                     (fn [event-type i]
-                       (m :div {:class "event"}
-                          (m :a {:href (str "data/" event-type ".csv") :class "burger-menu-item" :target "_new"}
-                             [(m :button {:class (str "color-" (+ (mod i 5) 1))} "⬇")
-                              (m :span event-type)]))))])]))]))
+              (component-csv-downloads data))]))]))
 
 (defn component-app [data]
   (m :div [(m {:view (partial component-burger-menu data)})
