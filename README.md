@@ -22,19 +22,21 @@ To require authentication, first create a password file:
 
 Then copy `./example.htaccess` to `.htaccess` and edit it.
 
-### Multi-user ###
-
-If you have multiple users, clone the app folder for each user and create a unique htaccess login for each.
-
-To create shared events either symlink one of the CSV files into each user's data directory or symlink the entire data folder.
-
 ### Data format ###
+
+![Screenshot 2](./screenshot-2.png)
 
 For every event logged the `event type`, `timestamp`, and `comment` are stored.
 
 Events are stored in individual CSV files - one file per event type.
 
 You can also download all CSVs stiched together with an extra column for the event name.
+
+### Multi-user ###
+
+If you have multiple users, clone the app folder for each user and create a unique htaccess login for each.
+
+To create shared events either symlink one of the CSV files into each user's data directory or symlink the entire data folder.
 
 ### License ###
 
