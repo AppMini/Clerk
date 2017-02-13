@@ -97,8 +97,9 @@
         (if (get data :error) (m :span {:id "error-messages"} (get data :error)))])))
 
 (defn component-comment [data]
+  (console.log (.-length (.split (or (get data :comment) "") "\n")))
   (m :textarea {:id "comment"
-                :rows 1
+                :rows 2
                 :onchange (partial update-comment data)
                 :placeholder "Event comment..."} (get data :comment)))
 
