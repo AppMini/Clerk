@@ -178,7 +178,8 @@
            (svg-icon "settings")))
       (if (get data :menu-show)
         (m :div {:id "burger-menu-items"}
-           [(m {:view (partial component-add-new-type data)})
+           [(m :h3 "Settings & Downloads")
+            (m {:view (partial component-add-new-type data)})
             (if (.-length (get data :event-types))
               (component-csv-downloads data))]))]))
 
