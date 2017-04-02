@@ -1,3 +1,5 @@
 .*.swp
 data/*.csv
 workspace
+.htaccess
+.htpasswd
