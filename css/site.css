@@ -271,11 +271,12 @@ path {
   font-weight: bold;
   font-size: 2em;
   text-align: center;
-  padding-top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #success-modal svg {
   position: relative;
-  top: 0.3em;
   margin-right: 0.25em;
 }
