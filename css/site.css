@@ -192,6 +192,7 @@ path {
 
 #burger-menu-items .event a {
   text-decoration: none;
+  font-weight: bold;
 }
 
 #add-event {
@@ -259,10 +260,6 @@ path {
 }
 
 .event span {
-}
-
-.event path {
-  fill: #444349;
 }
 
 #success-modal {
