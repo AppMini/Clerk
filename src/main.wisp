@@ -144,7 +144,7 @@
      (.map (get data :event-types)
            (fn [event-type i]
              (m :div {:class "event"}
-                [(m :span (str event-type))
+                [(m :span (m :a {:href (str "data/" event-type ".csv")} (str event-type)))
                  (m :button {:class (str "color-" (+ (mod i 5) 1))
                               :onclick (partial log-event data event-type)} (svg-icon "check"))])))))
 

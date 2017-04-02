@@ -246,6 +246,11 @@ path {
   color: white;
 }
 
+.event span a {
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .event button {
   margin-top: -0.75em;
   float: right;
