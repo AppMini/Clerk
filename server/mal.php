@@ -43,7 +43,7 @@ if (php_sapi_name() == "cli") {
 
 
 // Errors/Exceptions
-class Error extends Exception {
+class _Error extends Exception {
     public $obj = null;
     public function __construct($obj) {
         parent::__construct("Mal Error", 0, null);
@@ -542,7 +542,7 @@ class Env {
 
 
 // Error/Exception functions
-function mal_throw($obj) { throw new Error($obj); }
+function mal_throw($obj) { throw new _Error($obj); }
 
 
 // String functions
@@ -925,7 +925,7 @@ function MAL_EVAL($ast, $env) {
         if ($a2[0]->value === "catch*") {
             try {
                 return MAL_EVAL($a1, $env);
-            } catch (Error $e) {
+            } catch (_Error $e) {
                 $catch_env = new Env($env, array($a2[1]),
                                             array($e->obj));
                 return MAL_EVAL($a2[2], $catch_env);
