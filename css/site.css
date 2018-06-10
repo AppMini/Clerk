@@ -262,6 +262,35 @@ path {
 .event span {
 }
 
+#csv-view {
+  position: fixed;
+  max-width: 600px;
+  width: 100%;
+  background-color: white;
+  height: 100%;
+  top: 1em;
+  padding: 1em;
+  color: #333;
+  margin-left: -1em;
+  margin-top: -1em;
+  margin-bottom: 0px;
+}
+
+#csv-view .time {
+  color: #333;
+}
+
+#csv-view .description {
+  color: #666;
+  padding-left: 1em;
+}
+
+#csv-view .close-csv {
+  margin-left: auto;
+  margin-right: 0.25em;
+  display: block;
+}
+
 #success-modal, #spinner-modal {
   position: fixed;
   top: 0px;

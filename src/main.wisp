@@ -99,6 +99,21 @@
         (set! (aget data :success-message) "Event type added.")))
     (request.catch (partial handle-error data))))
 
+(defn show-csv [data data-url ev]
+  (let [request (m.request {:method "GET"
+                            :url data-url
+                            :deserialize (fn [d] (.map (.split d "\n") (fn [l] (.split l ","))))
+                            :withCredentials true})]
+    (set! (aget data :spinner) true)
+    (set! (aget data :error) nil)
+    (request.then
+      (fn [response-data]
+        (console.log "CSV:" response-data)
+        (set! (aget data :spinner) false)
+        (set! (aget data :error) nil)
+        (set! (aget data :view-csv) response-data)))
+    (request.catch (partial handle-error data))))
+
 (defn update-event-name [data ev]
   (set! (aget data :event-name) (str ev.target.value))
   (set! (aget ev :redraw) false))
@@ -144,7 +159,7 @@
      (.map (get data :event-types)
            (fn [event-type i]
              (m :div {:class "event"}
-                [(m :span (m :a {:href (str "data/" event-type ".csv")} (str event-type)))
+                [(m :span {:onclick (partial show-csv data (str "data/" event-type ".csv"))} (str event-type))
                  (m :button {:class (str "color-" (+ (mod i 5) 1))
                               :onclick (partial log-event data event-type)} (svg-icon "check"))])))))
 
@@ -183,6 +198,19 @@
             (if (.-length (get data :event-types))
               (component-csv-downloads data))]))]))
 
+(defn component-csv-view [data]
+  (m :div {:id "csv-view"}
+     [(m :button {:class "close-csv"
+                  :onclick (fn [ev] (set! (aget data :view-csv) nil))}
+         "x")
+      (.map (.reverse (get data :view-csv))
+            (fn [line]
+              (if (== (.indexOf (get line 0) "timestamp") -1)
+                (let [desc (or (get line 1) "")
+                      desc (.substring desc 1 (- (.-length desc) 1))]
+                  (m :div [(m :span {:class "time"} (get line 0))
+                           (m :span {:class "description"} desc)])))))]))
+
 (defn component-success-message [data]
   (if (get data :success-message)
     (do
@@ -194,11 +222,12 @@
   (m :div [(m {:view (partial component-burger-menu data)})
            (m {:view (partial component-spinner data)})
            (if (not (get data :menu-show))
-             ( if (> (.-length (get data :event-types)) 0)
+             (if (> (.-length (get data :event-types)) 0)
                [(m {:view (partial component-timestamp data)})
                 (m {:view (partial component-comment data)})
                 (m {:view (partial component-events data)})]
                (m :div {:id "message"} "To get started, add a new event-type in settings.")))
+           (if (get data :view-csv) (m {:view (partial component-csv-view data)}))
            (m {:view (partial component-success-message data)})]))
 
 ; ***** Main ***** ;
