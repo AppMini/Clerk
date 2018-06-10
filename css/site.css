@@ -262,7 +262,7 @@ path {
 .event span {
 }
 
-#success-modal {
+#success-modal, #spinner-modal {
   position: fixed;
   top: 0px;
   left: 0px;
@@ -278,7 +278,11 @@ path {
   justify-content: center;
 }
 
-#success-modal svg {
+#success-modal svg, #spinner-modal svg {
   position: relative;
   margin-right: 0.25em;
+}
+
+#spinner-modal svg {
+  animation: spinspin 0.5s infinite linear;
 }
