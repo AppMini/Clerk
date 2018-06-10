@@ -116,7 +116,7 @@
   (m :svg {:viewBox "0 0 24 24"
            :width 48
            :height 48
-           :class c}
+           :class (.join ["icon" c] " ")}
      (m :use {:xlink:href (str "#icon-" i)})))
 
 (defn component-spinner [data]
