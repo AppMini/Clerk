@@ -1,8 +1,4 @@
-# Clerk #
-
-Simple event-logger app.
-
-Track periodic events as they happen such as when baby has a nappy change, when you eat chocolate, or how many hours you slept.
+Track periodic events in your life such as when baby has a nappy change, when you eat chocolate, or how many hours you slept.
 
 ![Screenshot](./screenshot.png)
 
