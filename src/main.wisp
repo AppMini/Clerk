@@ -101,7 +101,7 @@
 
 (defn show-csv [data data-url ev]
   (let [request (m.request {:method "GET"
-                            :url data-url
+                            :url (str data-url "?" (Math.random))
                             :deserialize (fn [d] (.map (.split d "\n") (fn [l] (.split l ","))))
                             :withCredentials true})]
     (set! (aget data :spinner) true)
