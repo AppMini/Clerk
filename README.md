@@ -36,6 +36,10 @@ If you have multiple users, clone the app folder for each user and create a uniq
 
 To create shared events either symlink one of the CSV files into each user's data directory or symlink the entire data folder.
 
+### Server ###
+
+The server is written in [mal/php](https://github.com/kanaka/mal/tree/master/php#running-mal-scripts-on-php-hosting) which is a Clojure-like implementation on PHP.
+
 ### License ###
 
 Copyright Chris McCormick, 2017. [GPLv3 licensed](./LICENSE.txt).
